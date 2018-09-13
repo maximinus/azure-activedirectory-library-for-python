@@ -31,12 +31,11 @@ except ImportError:
     from urllib import quote # pylint: disable=no-name-in-module
     from urlparse import urlparse # pylint: disable=import-error,ungrouped-imports
 
-import requests
-
 from .constants import AADConstants
 from .adal_error import AdalError
 from . import log
 from . import util
+from . import curl_requests
 
 class Authority(object):
 
@@ -129,9 +128,9 @@ class Authority(object):
                         {"discovery_endpoint": discovery_endpoint.geturl()})
 
         try:
-            resp = requests.get(discovery_endpoint.geturl(), headers=get_options['headers'],
-                                verify=self._call_context.get('verify_ssl', None),
-                                proxies=self._call_context.get('proxies', None))
+            resp = curl_requests.get(discovery_endpoint.geturl(), headers=get_options['headers'],
+                                     verify=self._call_context.get('verify_ssl', None),
+                                     proxies=self._call_context.get('proxies', None))
             util.log_return_correlation_id(self._log, operation, resp)
         except Exception:
             self._log.exception("%(operation)s request failed",
